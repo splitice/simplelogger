@@ -5,14 +5,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ConsoleLogger extends AbstractLogger {
     /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
-     */
-    protected $out;
-
-    function __construct(OutputInterface $out) {
-        $this->out = $out;
-    }
-    /**
      * Logs with an arbitrary level.
      *
      * @param mixed $level
@@ -22,9 +14,15 @@ class ConsoleLogger extends AbstractLogger {
      */
     public function log($level, $message, array $context = array())
     {
-
-        $message = '<'. $level . '>' . $message . '</'. $level . '>';
-        $this->out->writeln($message);
+        if($level == 'debug'){
+            return;
+        }
+        foreach($context as $k=>$v){
+            if(strpos($message, '{'.$k.'}') !== false){
+                $message = str_replace('{'.$k.'}',(string)$v, $message);
+            }
+        }
+        $message = '<'. $level . '>' . $message . '</'. $level . '>'. "\r\n";
+        echo $message;
     }
-
 }
